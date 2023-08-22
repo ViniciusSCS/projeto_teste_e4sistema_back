@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ExcelHelper;
 use App\Models\Pessoa;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\PessoaRequest;
 use App\Models\Telefone;
@@ -43,7 +43,7 @@ class PessoaController extends Controller
         return ['status' => true, "pessoas" => $query];
     }
 
-    public function edit($id)
+    public function show($id)
     {
         $pessoa = Pessoa::find($id);
 
@@ -92,5 +92,12 @@ class PessoaController extends Controller
         $pessoa->delete($id);
 
         return ['status' => true, 'message' => 'Pessoa deletada com sucesso!', "pessoa" => $pessoa];
+    }
+
+    public function convertTitleToNumber($title)
+    {
+        $columnNumber = ExcelHelper::titleToNumber($title);
+
+        return ['column_number' => $columnNumber];
     }
 }

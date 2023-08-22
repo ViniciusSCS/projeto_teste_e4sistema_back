@@ -9,15 +9,18 @@ use App\Http\Requests\{
     UsuarioRequest,
     UsuarioUpdateRequest
 };
+use App\Services\UsuarioService;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\TokenRepository;
 
 class UsuarioController extends Controller
 {
+    protected $service;
     protected $tokenRepository;
 
-    public function __construct(TokenRepository $tokenRepository)
+    public function __construct(UsuarioService $service, TokenRepository $tokenRepository)
     {
+        $this->service = $service;
         $this->tokenRepository = $tokenRepository;
     }
 
@@ -55,29 +58,21 @@ class UsuarioController extends Controller
     {
         $data = $request->all();
 
-        $user = User::create([
-            'nome' => $data['nome'],
-            'usuario' => $data['usuario'],
-            'email' => strtolower($data['email']),
-            'password' => bcrypt($data['password']),
-        ]);
-
-        $user = User::find($user->id);
-        $token = $user->createToken('JWT')->plainTextToken;
+        $user = $this->service->create($data);
 
         return ['status' => true, "messages" => 'Usuário cadastrado com sucesso', "usuario" => $user];
     }
 
     public function list()
     {
-        $query = User::all();
+        $query = $this->service->list();
 
         return ['status' => true, "usuarios" => $query];
     }
 
-    public function edit($id)
+    public function show($id)
     {
-        $user = User::find($id);
+        $user = $this->service->find($id);
 
         $info = ($user == NULL
             ? ['status' => false, 'message' => 'Usuário não encotrado']
@@ -89,24 +84,10 @@ class UsuarioController extends Controller
 
     public function update(UsuarioUpdateRequest $request, $id)
     {
-        $user = User::find($id);
+        $user = $this->service->find($id);
         $data = $request->all();
 
-        if (isset($data['password'])) {
-            $data = [
-                'id' => $id,
-                'nome' => $data['nome'],
-                'usuario' => $data['usuario'],
-                'email' => strtolower($data['email']),
-                'password'  => bcrypt($data['password'])
-            ];
-        } else {
-            $data = [
-                'nome' => $data['nome'],
-                'usuario' => $data['usuario'],
-                'email' => strtolower($data['email']),
-            ];
-        }
+        $userUpdate = $this->service->update($data, $id);
 
         $user->update($data);
 

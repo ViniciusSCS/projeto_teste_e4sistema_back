@@ -27,17 +27,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [UsuarioController::class, 'logout']);
         Route::delete('/delete/{id}', [UsuarioController::class, 'delete']);
         Route::get('/listar', [UsuarioController::class, 'list']);
-        Route::get('/editar/{id}', [UsuarioController::class, 'edit']);
-        Route::get('/visualizar/{id}', [UsuarioController::class, 'edit']);
+        Route::get('/editar/{id}', [UsuarioController::class, 'show']);
+        Route::get('/visualizar/{id}', [UsuarioController::class, 'show']);
         Route::put('/atualizar/{id}', [UsuarioController::class, 'update']);
     });
 
     Route::prefix('pessoa')->group(function () {
         Route::post('/cadastrar', [PessoaController::class, 'create']);
         Route::get('/listar', [PessoaController::class, 'list']);
-        Route::get('/editar/{id}', [PessoaController::class, 'edit']);
-        Route::get('/visualizar/{id}', [PessoaController::class, 'edit']);
+        Route::get('/editar/{id}', [PessoaController::class, 'show']);
+        Route::get('/visualizar/{id}', [PessoaController::class, 'show']);
         Route::put('/atualizar/{id}', [PessoaController::class, 'update']);
         Route::delete('/delete/{id}', [PessoaController::class, 'delete']);
+        Route::get('/teste/{title?}', [PessoaController::class, 'convertTitleToNumber']);
     });
 });
